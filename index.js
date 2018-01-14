@@ -8,14 +8,15 @@ const streamToPromise = require('sprom');
 const rimraf = require('rimraf');
 const through2 = require('through2');
 const uglify = require('uglify-js');
+const glob = require('glob');
 
 if (!(process.env.APP_ROOT_PATH)) new Error(`Please provide APP_ROOT_PATH.`); 
 
 const ng2InlineTemplate = require('./utils/ng2-inline-template').ng2InlineTemplate;
 const ngc = require('@angular/compiler-cli/src/main').main;
 
-const { writeFileSync } = require('fs');
-const { join, basename  } = require('path');
+const { writeFileSync, readFileSync } = require('fs');
+const { join, basename, dirname  } = require('path');
 
 const utils = require('./utils/bundle-utils');
 
@@ -25,10 +26,11 @@ config.src = [ "src/**/*.ts", "!src/**/*.spec.ts", join(__dirname, 'utils', 'tsc
 const umdConfig = require('./utils/rollup-umd.config');
 const fesmConfig = require('./utils/rollup-fesm.config');
 
-const minify = () => {
-  return through2.obj((file, enc, done) => {
-    writeFileSync(file.path.replace('js', 'min.js'), uglify.minify(file.path).code);
-    done();
+const minifyJS = () => {
+  return through2.obj(function(file, enc, done) {
+    const uglifyJS = uglify.minify(file.contents.toString('utf8')).code;
+    file.contents = Buffer.from(uglifyJS, 'utf8');
+    done(null, file);
   });
 };
 
@@ -44,8 +46,10 @@ const rollupBuildUmd = async () => {
     .pipe(rollup(umdConfig))
     .pipe(rename(config.rollup.umdName))
     .pipe(vfs.dest(config.folder.bundleDest))
-    .pipe(minify())
-  );
+    .pipe(minifyJS())
+    .pipe(rename(`${config.rollup.moduleName}.umd.min.js`))
+    .pipe(vfs.dest(config.folder.bundleDest))
+  )
 };
 
 const createTsConfig = () => {
@@ -70,12 +74,9 @@ const createTsConfig = () => {
   });
 };
 
-const writeFileEntryPoint = async () => {
-  const ngEntryPointPath = filePath => join(process.env.APP_ROOT_PATH, config.folder.tmp, filePath);
-  await Promise.all([
-    writeFileSync(ngEntryPointPath('index.ts'), `export * from './public_api'`),
-    writeFileSync(ngEntryPointPath('public_api.ts'), `export * from './src/index'`)
-  ]);
+const copyFileEntry = async () => {
+  const miscFiles = glob.sync(join(__dirname, 'misc', '*.ts'));
+  await streamToPromise.end(vfs.src(miscFiles).pipe(vfs.dest(config.folder.tmp)));
 };
 
 const copyfile = async () => {
@@ -84,7 +85,7 @@ const copyfile = async () => {
     .pipe(base64())
     .pipe(createTsConfig())
     .pipe(vfs.dest(config.folder.tmpDest))
-  ).then(() => writeFileEntryPoint());
+  ).then(() => copyFileEntry());
 };
 
 const ngCompile = async () => {
@@ -112,6 +113,13 @@ exports.bundle = async () => {
   await copyfile();
   await ngCompile();
   await Promise.all([ await rollupBuild('esm5'), await rollupBuild('esm2015'), await rollupBuildUmd(), await copyAssets() ])
+};
+exports.minify = async () => {
+  await streamToPromise.end(vfs.src(`${config.folder.bundleDest}/*.js`)
+    .pipe(minifyJS())
+    .pipe(rename(`${config.rollup.moduleName}.umd.min.js`))
+    .pipe(vfs.dest(config.folder.bundleDest))
+  );
 };
 exports.rimraf = async (folderName) => {
   const directory = join(process.env.APP_ROOT_PATH, folderName);

@@ -4,8 +4,11 @@ const glob = require('glob-all');
 const tsConfigEs5 = require('./tsconfig-es5');
 const plugins = [];
 
-const pluginPaths = path.join(process.env.APP_ROOT_PATH, 'utils', '*-plugin.js');
-glob.sync([ pluginPaths ]).forEach(file => plugins.push(require(file)));
+glob.sync([ 
+  path.join(__dirname, '*-plugin.js'), 
+  path.join(process.env.APP_ROOT_PATH, 'plugins', '*-plugin.js') 
+])
+.forEach(file => plugins.push(require(file)));
 
 module.exports = {
   onwarn: (warning) => {
