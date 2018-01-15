@@ -42,6 +42,5 @@ module.exports = {
     "dest": "dist",
     "tmpDest": '.tmp/src',
     "bundleDest": 'dist/bundles'
-  },
-  "tsconfigEs5": "utils/tsconfig-es5.js"
+  }
 };
