@@ -7,10 +7,9 @@ const rename = require('gulp-rename');
 
 const streamToPromise = require('sprom');
 const rimraf = require('rimraf');
-const through2 = require('through2');
-const uglify = require('uglify-js');
 
 const { join, resolve, extname } = require('path');
+const { minify, tsconfig } = require('./transform');
 
 if (!(process.env.APP_ROOT_PATH)) {
   process.env.APP_ROOT_PATH = resolve();
@@ -20,18 +19,9 @@ const ng2InlineTemplate = require('./utils/ng2-inline-template').ng2InlineTempla
 const ngc = require('@angular/compiler-cli/src/main').main;
 
 const config = require('./utils/bundle-config');
-config.src = [ "src/**/*.ts", "!src/**/*.spec.ts" ];
 
 const umdConfig = require('./utils/rollup-umd.config');
 const fesmConfig = require('./utils/rollup-fesm.config');
-
-const minifyJS = () => {
-  return through2.obj(function(file, enc, done) {
-    const uglifyJS = uglify.minify(file.contents.toString('utf8')).code;
-    file.contents = Buffer.from(uglifyJS, 'utf8');
-    done(null, file);
-  });
-};
 
 const rollupBuild = async (fileType) => {
   await streamToPromise.end(vfs.src(`${config.folder.tmp}/${fileType}/*.js`)
@@ -45,26 +35,15 @@ const rollupBuildUmd = async () => {
     .pipe(rollup(umdConfig))
     .pipe(rename(config.rollup.umdName))
     .pipe(vfs.dest(config.folder.bundleDest))
-    .pipe(minifyJS())
+    .pipe(minify())
     .pipe(rename(`${config.rollup.moduleName}.umd.min.js`))
     .pipe(vfs.dest(config.folder.bundleDest))
   )
 };
 
-const tsConfig = () => {
-  return through2.obj(function(file, enc, done) {
-    if (extname(file.path) === '.json') {
-      const contents = file.contents.toString('utf8').replace('package-name-js', config.rollup.moduleName).replace('package-name', config.rollup.entry);
-      file.contents = Buffer.from(contents, 'utf8');     
-    }
-    this.push(file);
-    done();
-  }); 
-};
-
 const copyFileEntry = async () => {
   await streamToPromise.end(vfs.src(join(__dirname, 'misc', '*.*'))
-    .pipe(tsConfig())
+    .pipe(tsconfig(config.rollup))
     .pipe(vfs.dest(config.folder.tmp))
   );
 };
@@ -98,14 +77,14 @@ exports.copyfile = async () => await copyfile();
 exports.ngCompile = async () => await ngCompile();
 exports.copyAssets = async () => await copyAssets();
 exports.rollupBuild = async (type) => (type) ? await rollupBuild(type) : await rollupBuildUmd();
-exports.bundle = async () => {
+exports.bundle = async () => {  
   await copyfile();
   await ngCompile();
-  await Promise.all([ await rollupBuild('esm5'), await rollupBuild('esm2015'), await rollupBuildUmd(), await copyAssets() ])
+  await Promise.all([ await rollupBuild('esm5'), await rollupBuild('esm2015'), await rollupBuildUmd(), await copyAssets() ]);
 };
 exports.minify = async () => {
   await streamToPromise.end(vfs.src(`${config.folder.bundleDest}/*.js`)
-    .pipe(minifyJS())
+    .pipe(minify())
     .pipe(rename(`${config.rollup.moduleName}.umd.min.js`))
     .pipe(vfs.dest(config.folder.bundleDest))
   );
