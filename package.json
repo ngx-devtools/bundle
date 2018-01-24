@@ -1,5 +1,5 @@
 {
-  "name": "ngx-bundle",
+  "name": "@ngx-devtools/bundle",
   "version": "0.0.8",
   "description": "",
   "main": "index.js",
