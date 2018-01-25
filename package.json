@@ -1,6 +1,6 @@
 {
   "name": "@ngx-devtools/bundle",
-  "version": "0.0.8",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -17,8 +17,8 @@
   },
   "homepage": "https://github.com/aelbore/ngx-bundle#readme",
   "dependencies": {
-    "@angular/compiler": "5.2.1",
-    "@angular/compiler-cli": "5.2.1",
+    "@angular/compiler": "5.2.2",
+    "@angular/compiler-cli": "5.2.2",
     "glob-all": "3.1.0",
     "gulp-base64-inline": "1.0.3",
     "gulp-inline-ng2-template": "4.1.0",
