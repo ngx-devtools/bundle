@@ -1,5 +1,6 @@
-
 const vfs = require('vinyl-fs');
+
+const { join, resolve, extname } = require('path');
 
 if (!(process.env.APP_ROOT_PATH)) {
   process.env.APP_ROOT_PATH = resolve();
@@ -10,9 +11,8 @@ const rollup = require('gulp-rollup');
 const rename = require('gulp-rename');
 const ngc = require('@angular/compiler-cli/src/main').main;
 
-const { join, resolve, extname } = require('path');
 const { ng2InlineTemplate, streamToPromise } = require('@ngx-devtools/common');
-const { minify, tsconfig } = require('./transform');
+const { minify, tsconfig, package } = require('./transform');
 
 const config = require('./utils/bundle-config');
 
@@ -66,21 +66,16 @@ const copyAssets = async () => {
     'README.md', 
     'package.json'
   ];
-  await streamToPromise(vfs.src(copyAssets).pipe(vfs.dest(config.folder.dest)));
+  await streamToPromise(vfs.src(copyAssets)
+    .pipe(package())
+    .pipe(vfs.dest(config.folder.dest))
+  );
 };
 
-exports.ngCompile = async () => await ngCompile();
 exports.copyAssets = async () => await copyAssets();
 exports.rollupBuild = async (type) => (type) ? await rollupBuild(type) : await rollupBuildUmd();
 exports.bundle = async () => {  
   await copyfile();
   await ngCompile();
   await Promise.all([ await rollupBuild('esm5'), await rollupBuild('esm2015'), await rollupBuildUmd(), await copyAssets() ]);
-};
-exports.minify = async () => {
-  await streamToPromise(vfs.src(`${config.folder.bundleDest}/*.js`)
-    .pipe(minify())
-    .pipe(rename(`${config.rollup.moduleName}.umd.min.js`))
-    .pipe(vfs.dest(config.folder.bundleDest))
-  );
 };
