@@ -5,10 +5,10 @@ const base64 = require('gulp-base64-inline');
 const rollup = require('gulp-rollup');
 const rename = require('gulp-rename');
 
-const rimraf = require('rimraf');
-
 const { join, resolve, extname } = require('path');
 const { minify, tsconfig } = require('./transform');
+
+const { ng2InlineTemplate } = require('@ngx-devtools/common');
 
 if (!(process.env.APP_ROOT_PATH)) {
   process.env.APP_ROOT_PATH = resolve();
@@ -16,7 +16,6 @@ if (!(process.env.APP_ROOT_PATH)) {
 
 const streamToPromise = require('./utils/stream-to-promise');
 
-const ng2InlineTemplate = require('./utils/ng2-inline-template').ng2InlineTemplate;
 const ngc = require('@angular/compiler-cli/src/main').main;
 
 const config = require('./utils/bundle-config');
@@ -74,7 +73,6 @@ const copyAssets = async () => {
   await streamToPromise(vfs.src(copyAssets).pipe(vfs.dest(config.folder.dest)));
 };
 
-exports.copyfile = async () => await copyfile();
 exports.ngCompile = async () => await ngCompile();
 exports.copyAssets = async () => await copyAssets();
 exports.rollupBuild = async (type) => (type) ? await rollupBuild(type) : await rollupBuildUmd();
@@ -89,10 +87,4 @@ exports.minify = async () => {
     .pipe(rename(`${config.rollup.moduleName}.umd.min.js`))
     .pipe(vfs.dest(config.folder.bundleDest))
   );
-};
-exports.rimraf = async (folderName) => {
-  const directory = join(process.env.APP_ROOT_PATH, folderName);
-  await new Promise((resolve, reject) => {
-    rimraf(directory, (error) => (error) ? reject() : resolve());
-  });
 };

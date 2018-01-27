@@ -19,15 +19,9 @@
   "dependencies": {
     "@angular/compiler": "5.2.2",
     "@angular/compiler-cli": "5.2.2",
-    "glob-all": "3.1.0",
-    "gulp-base64-inline": "1.0.3",
-    "gulp-inline-ng2-template": "4.1.0",
+    "@ngx-devtools/common": "latest",
     "gulp-rename": "1.2.2",
     "gulp-rollup": "2.15.0",
-    "html-minifier": "3.5.8",
-    "node-sass": "4.7.2",
-    "rimraf": "2.6.2",
-    "typescript": "2.6.2",
     "uglify-js": "3.3.5"
   }
 }
