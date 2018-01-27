@@ -1,22 +1,18 @@
 
 const vfs = require('vinyl-fs');
 
-const base64 = require('gulp-base64-inline');
-const rollup = require('gulp-rollup');
-const rename = require('gulp-rename');
-
-const { join, resolve, extname } = require('path');
-const { minify, tsconfig } = require('./transform');
-
-const { ng2InlineTemplate } = require('@ngx-devtools/common');
-
 if (!(process.env.APP_ROOT_PATH)) {
   process.env.APP_ROOT_PATH = resolve();
 }
 
-const streamToPromise = require('./utils/stream-to-promise');
-
+const base64 = require('gulp-base64-inline');
+const rollup = require('gulp-rollup');
+const rename = require('gulp-rename');
 const ngc = require('@angular/compiler-cli/src/main').main;
+
+const { join, resolve, extname } = require('path');
+const { ng2InlineTemplate, streamToPromise } = require('@ngx-devtools/common');
+const { minify, tsconfig } = require('./transform');
 
 const config = require('./utils/bundle-config');
 
