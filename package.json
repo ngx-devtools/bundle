@@ -1,6 +1,6 @@
 {
   "name": "@ngx-devtools/bundle",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -20,7 +20,6 @@
     "@angular/compiler": "5.2.2",
     "@angular/compiler-cli": "5.2.2",
     "@ngx-devtools/common": "latest",
-    "gulp-rename": "1.2.2",
     "gulp-rollup": "2.15.0",
     "uglify-js": "3.3.5"
   }

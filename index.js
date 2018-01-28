@@ -8,8 +8,9 @@ if (!(process.env.APP_ROOT_PATH)) {
 
 const base64 = require('gulp-base64-inline');
 const rollup = require('gulp-rollup');
-const rename = require('gulp-rename');
 const ngc = require('@angular/compiler-cli/src/main').main;
+
+const rename = require('./utils/bundle-rename');
 
 const { ng2InlineTemplate, streamToPromise } = require('@ngx-devtools/common');
 const { minify, tsconfig, package } = require('./transform');
