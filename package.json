@@ -20,7 +20,7 @@
     "@angular/compiler": "5.2.5",
     "@angular/compiler-cli": "5.2.5",
     "@ngx-devtools/common": "latest",
-    "gulp-rollup": "2.16.2", 
+    "gulp-rollup": "2.16.2",
     "uglify-js": "3.3.11"
   }
 }
