@@ -17,10 +17,10 @@
   },
   "homepage": "https://github.com/aelbore/ngx-bundle#readme",
   "dependencies": {
-    "@angular/compiler": "5.2.3",
-    "@angular/compiler-cli": "5.2.3",
+    "@angular/compiler": "5.2.5",
+    "@angular/compiler-cli": "5.2.5",
     "@ngx-devtools/common": "latest",
-    "gulp-rollup": "2.15.0",
-    "uglify-js": "3.3.5"
+    "gulp-rollup": "2.16.2", 
+    "uglify-js": "3.3.11"
   }
 }
