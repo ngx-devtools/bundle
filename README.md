@@ -22,12 +22,13 @@ npm install --save-dev ngx-bundle
 ##### Bundle your code
 ```javascript
 const gulp = require('gulp');
-const ngxBundle = require('ngx-bundle');
+const { bundle } = require('@ngx-devtools/bundle');
+const { rimraf } = require('@ngx-devtools/common');
 
 gulp.task('bundle', async (done) => {
-  await Promise.all([ await ngxBundle.rimraf('.tmp'), await ngxBundle.rimraf('dist') ])
-    .then(() => ngxBundle.bundle())
-    .then(() => ngxBundle.rimraf('.tmp'));
+  await Promise.all([ await rimraf('.tmp'), await rimraf('dist') ])
+    .then(() => bundle())
+    .then(() => rimraf('.tmp'));
 });
 ```
 
