@@ -16,11 +16,13 @@
     "url": "https://github.com/aelbore/ngx-bundle/issues"
   },
   "homepage": "https://github.com/aelbore/ngx-bundle#readme",
+  "peerDependencies": {
+    "@angular/compiler": ">=5.2.0",
+    "@angular/compiler-cli": ">=5.2.0"
+  },
   "dependencies": {
-    "@angular/compiler": "5.2.5",
-    "@angular/compiler-cli": "5.2.5",
     "@ngx-devtools/common": "latest",
     "gulp-rollup": "2.16.2",
-    "uglify-js": "3.3.11"
+    "uglify-js": "3.3.14"
   }
 }

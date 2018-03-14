@@ -22,19 +22,22 @@ module.exports = {
     const copyConfig = Object.assign({}, opts);
 
     let jsFiles = [];
-
-    const idKeys = Object.keys(pkg.dependencies);
-    const idsCopy = idKeys.filter(data => filterIdPredicate(data, opts.external));
-    if (idsCopy) {
-      const typings = filterTypings(idsCopy);
-      idsCopy.forEach(file => {
-        if (typings.find(_ => _ === file)) {
-          jsFiles.push(file);
-        } else {
-          jsFiles = jsFiles.concat(globJsFiles(file));
-        }      
-      });
+    
+    if (pkg['dependencies']) {
+      const idKeys = Object.keys(pkg.dependencies);
+      const idsCopy = idKeys.filter(data => filterIdPredicate(data, opts.external));
+      if (idsCopy) {
+        const typings = filterTypings(idsCopy);
+        idsCopy.forEach(file => {
+          if (typings.find(_ => _ === file)) {
+            jsFiles.push(file);
+          } else {
+            jsFiles = jsFiles.concat(globJsFiles(file));
+          }      
+        });
+      }
     }
+    jsFiles = (jsFiles.length <= 0) ? require('./bundle-config').rollup.external : jsFiles;
     jsFiles.forEach(file => {
       if (!(copyConfig.external.find(value => value === file))) {
         copyConfig.external.push(file);
